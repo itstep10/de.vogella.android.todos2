@@ -6,12 +6,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import de.vogella.android.todos.contentprovider.MyTodoContentProvider;
+import de.vogella.android.todos.database.MyTable;
 import de.vogella.android.todos.database.TodoTable;
 
 /*
@@ -38,13 +40,11 @@ public class TodoDetailActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 
 		// Check from the saved Instance
-		todoUri = (bundle == null) ? null : (Uri) bundle
-				.getParcelable(MyTodoContentProvider.CONTENT_ITEM_TYPE);
+		todoUri = (bundle == null) ? null : (Uri) bundle.getParcelable(MyTodoContentProvider.CONTENT_ITEM_TYPE);
 
 		// Or passed from the other activity
 		if (extras != null) {
-			todoUri = extras
-					.getParcelable(MyTodoContentProvider.CONTENT_ITEM_TYPE);
+			todoUri = extras.getParcelable(MyTodoContentProvider.CONTENT_ITEM_TYPE);
 
 			fillData(todoUri);
 		}
@@ -60,18 +60,15 @@ public class TodoDetailActivity extends Activity {
 			}
 
 		});
-		
 	}
 
 	private void fillData(Uri uri) {
-		String[] projection = { TodoTable.COLUMN_SUMMARY,
-				TodoTable.COLUMN_DESCRIPTION, TodoTable.COLUMN_CATEGORY };
-		Cursor cursor = getContentResolver().query(uri, projection, null, null,
-				null);
+		String[] projection = { TodoTable.COLUMN_SUMMARY,TodoTable.COLUMN_DESCRIPTION, TodoTable.COLUMN_CATEGORY };
+		Cursor cursor = getContentResolver().query(uri, projection, null, null,null);
+
 		if (cursor != null) {
 			cursor.moveToFirst();
-			String category = cursor.getString(cursor
-					.getColumnIndexOrThrow(TodoTable.COLUMN_CATEGORY));
+			String category = cursor.getString(cursor.getColumnIndexOrThrow(TodoTable.COLUMN_CATEGORY));
 
 			for (int i = 0; i < mCategory.getCount(); i++) {
 
@@ -81,10 +78,8 @@ public class TodoDetailActivity extends Activity {
 				}
 			}
 
-			mTitleText.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(TodoTable.COLUMN_SUMMARY)));
-			mBodyText.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(TodoTable.COLUMN_DESCRIPTION)));
+			mTitleText.setText(cursor.getString(cursor.getColumnIndexOrThrow(TodoTable.COLUMN_SUMMARY)));
+			mBodyText.setText(cursor.getString(cursor.getColumnIndexOrThrow(TodoTable.COLUMN_DESCRIPTION)));
 
 			// Always close the cursor
 			cursor.close();
@@ -122,8 +117,7 @@ public class TodoDetailActivity extends Activity {
 
 		if (todoUri == null) {
 			// New todo
-			todoUri = getContentResolver().insert(
-					MyTodoContentProvider.CONTENT_URI, values);
+			todoUri = getContentResolver().insert(MyTodoContentProvider.CONTENT_TODO_URI, values);
 		} else {
 			// Update todo
 			getContentResolver().update(todoUri, values, null, null);
